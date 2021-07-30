@@ -17,6 +17,8 @@ namespace VomitRPC {
 
 	public class RPCCaller {
 		public static object CreateCaller<T>() {
+			MethodInfo PerformRPCMethod = typeof(RPCCaller).GetMethod("PerformRPC", BindingFlags.Public | BindingFlags.Static);
+
 			AssemblyName AName = new AssemblyName("Assembly_" + typeof(T).Name);
 			AppDomain Domain = Thread.GetDomain();
 			AssemblyBuilder ABuilder = Domain.DefineDynamicAssembly(AName, AssemblyBuilderAccess.Run);
@@ -29,25 +31,35 @@ namespace VomitRPC {
 			MethodBuilder PerformRPCBuilder = TBuilder.DefineMethod(nameof(PerformRPC), MethodAttributes.Public | MethodAttributes.Final | MethodAttributes.Virtual);
 			PerformRPCBuilder.SetParameters(new Type[] { typeof(string), typeof(string) });
 			PerformRPCBuilder.SetReturnType(typeof(void));
+			GenerateStaticMethodCall(PerformRPCBuilder, PerformRPCMethod);
 
-			PerformRPCAction AAA = (A, B) => PerformRPC(A, B);
-			MethodBody PerformRPCImplBody = AAA.GetMethodInfo().GetMethodBody();
-			PerformRPCBuilder.SetMethodBody(PerformRPCImplBody.GetILAsByteArray(), PerformRPCImplBody.MaxStackSize, null, null, null);
+			/*MethodInfo[] RequiredMethods = typeof(T).GetMethods();
+			for (int i = 0; i < RequiredMethods.Length; i++) {
+				MethodBuilder MB = TBuilder.DefineMethod(RequiredMethods[i].Name, MethodAttributes.Public | MethodAttributes.Final | MethodAttributes.Virtual);
 
-			/*ParameterExpression ParamThis = Expression.Parameter(typeof(object), "This");
-			ParameterExpression ParamName = Expression.Parameter(typeof(string), "Name");
-			ParameterExpression ParamFunc = Expression.Parameter(typeof(string), "Func");
-			MethodCallExpression PerformRPCCallExp = Expression.Call(null, typeof(RPCCaller).GetMethod("PerformRPC", BindingFlags.Public | BindingFlags.Static));
 
-			Expression.Lambda<Action<string, string>>(PerformRPCCallExp, null);
-
-			Expression.Lambda(PerformRPCCallExp, ParamThis, ParamName, ParamFunc).CompileToMethod(PerformRPCBuilder);*/
+			}*/
 
 			Type TType = TBuilder.CreateType();
 			return Activator.CreateInstance(TType);
 		}
 
-		public static void PerformRPC(string Name, string Func) {
+		static void GenerateStaticMethodCall(MethodBuilder MB, MethodInfo StaticMethod) {
+			ParameterInfo[] Params = StaticMethod.GetParameters();
+			ILGenerator IL = MB.GetILGenerator();
+
+			for (int i = 0; i < Params.Length; i++) {
+				if (i == 1) {
+					IL.Emit(OpCodes.Ldstr, "Hello World!");
+				} else
+					IL.Emit(OpCodes.Ldarg, i);
+			}
+
+			IL.EmitCall(OpCodes.Call, StaticMethod, null);
+			IL.Emit(OpCodes.Ret);
+		}
+
+		public static void PerformRPC(object This, string Name, string Func) {
 		}
 	}
 }
