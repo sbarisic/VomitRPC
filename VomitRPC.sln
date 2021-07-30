@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31321.278
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VomitRPC", "VomitRPC\VomitRPC.csproj", "{EFCA3588-96AB-479B-B5BB-02ED129D8723}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{BB0950CD-1C40-4B34-8AF5-FAFD52CADC86}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EFCA3588-96AB-479B-B5BB-02ED129D8723}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFCA3588-96AB-479B-B5BB-02ED129D8723}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFCA3588-96AB-479B-B5BB-02ED129D8723}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFCA3588-96AB-479B-B5BB-02ED129D8723}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB0950CD-1C40-4B34-8AF5-FAFD52CADC86}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB0950CD-1C40-4B34-8AF5-FAFD52CADC86}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB0950CD-1C40-4B34-8AF5-FAFD52CADC86}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB0950CD-1C40-4B34-8AF5-FAFD52CADC86}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DBF0F1BC-2D07-446E-B4A3-9BB7E8FAC2C9}
+	EndGlobalSection
+EndGlobal
