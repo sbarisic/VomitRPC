@@ -47,18 +47,6 @@ namespace VomitRPC {
 			return (T)TypeInstance;
 		}
 
-		static void GenerateStaticMethodCall(MethodBuilder MB, MethodInfo StaticMethod) {
-			ParameterInfo[] Params = StaticMethod.GetParameters();
-			ILGenerator IL = MB.GetILGenerator();
-
-			for (int i = 0; i < Params.Length; i++) {
-				IL.Emit(OpCodes.Ldarg, i);
-			}
-
-			IL.Emit(OpCodes.Call, StaticMethod);
-			IL.Emit(OpCodes.Ret);
-		}
-
 		static void GeneratePerformRPCCall(MethodBuilder MB, ParameterInfo[] MethodParams, FieldBuilder LocalFunc) {
 			ILGenerator IL = MB.GetILGenerator();
 
@@ -88,8 +76,6 @@ namespace VomitRPC {
 				IL.Emit(OpCodes.Ldnull);
 			}
 
-			//IL.Emit(OpCodes.Call, PerformRPCMethod);
-
 			MethodInfo InvokeMethod = LocalFunc.FieldType.GetMethod("Invoke");
 			IL.Emit(OpCodes.Callvirt, InvokeMethod);
 
@@ -101,22 +87,5 @@ namespace VomitRPC {
 
 			IL.Emit(OpCodes.Ret);
 		}
-
-		/*public static object PerformRPC(object This, string Name, object[] Args) {
-			Console.Write("PerformRPC {0}(", Name);
-
-			if (Args != null)
-				Console.Write(string.Join(", ", Args));
-
-			Console.WriteLine(")");
-
-			if (Name == "Add")
-				return (int)Args[0] + (int)Args[1];
-
-			if (Name == "AppendStrings")
-				return "How about no";
-
-			return null;
-		}*/
 	}
 }
