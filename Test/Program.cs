@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Reflection;
 using System.Threading.Tasks;
 using VomitRPC;
 
@@ -9,17 +10,19 @@ namespace Test {
 	public interface ITest {
 		void DoSomething();
 
-		/*void Print(string Str);
-
-		void Print(string Fmt, params object[] Args);
-
 		int Add(int A, int B);
 
-		string ToString(object Obj);*/
+		string AppendStrings(string A, string B);
+
+		void Print(string Str);
 	}
 
 	class TestImpl : ITest {
 		public int Add(int A, int B) {
+			return A + B;
+		}
+
+		public string AppendStrings(string A, string B) {
 			return A + B;
 		}
 
@@ -30,29 +33,22 @@ namespace Test {
 		public void Print(string Str) {
 			Console.WriteLine("Print: {0}", Str);
 		}
-
-		public void Print(string Fmt, params object[] Args) {
-			Print(string.Format(Fmt, Args));
-		}
-
-		public string ToString(object Obj) {
-			return Obj.ToString();
-		}
 	}
 
-	class Program {
+	public class Program {
 		static void Main(string[] args) {
 			TestImpl RemoteObject = new TestImpl();
 
-			object TestCaller = RPCCaller.CreateCaller<ITest>();
-			IRPCCallerImpl Internal_Test = (IRPCCallerImpl)TestCaller;
+			ITest TestCaller = RPCCaller.CreateCaller<ITest>((This, Name, Args) => {
+				MethodInfo Method = RemoteObject.GetType().GetMethod(Name);
+				return Method.Invoke(RemoteObject, Args);
+			});
 
-			Internal_Test.PerformRPC("AAA", "BBB");
+			TestCaller.DoSomething();
+			Console.WriteLine("Result = {0}", TestCaller.Add(2, 3));
+			TestCaller.Print("Print this string!");
+			Console.WriteLine("Appended string = {0}", TestCaller.AppendStrings("Hello", "World!"));
 
-			//TestCaller.DoSomething();
-
-			Console.WriteLine("Done!");
-			Console.ReadLine();
 		}
 	}
 }
