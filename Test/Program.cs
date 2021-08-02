@@ -7,22 +7,27 @@ using System.Threading.Tasks;
 using VomitRPC;
 
 namespace Test {
-	public interface ITest {
-		object[] SomeMethod(int A, int B, string[] Strings);
+	public interface ILuaClass {
+		int Add(int A, int B);
 
-		void SomeOtherMethod();
+		float Mul(float A, float B);
 	}
 
 	public class Program {
+		static object LuaInvoker(object This, string Name, object[] Args) {
+			// Push arguments to stack here
+
+			// Call lua function Name
+
+			// Pop return value from stack and return
+			return null;
+		}
+
 		static void Main(string[] args) {
-			ITest TestCaller = RPCCaller.CreateInterfaceWrapper<ITest>((This, Name, Args) => {
-				Console.WriteLine("You are calling '{0}' with {1} arguments", Name, Args?.Length ?? 0);
-				return null;
-			});
+			ILuaClass LuaClass = RPCCaller.CreateInterfaceWrapper<ILuaClass>(LuaInvoker);
 
-			object[] Ret = TestCaller.SomeMethod(2, 3, new[] { "String1", "String2" });
-			TestCaller.SomeOtherMethod();
-
+			LuaClass.Add(2, 3);
+			LuaClass.Mul(4, 6);
 		}
 	}
 }
