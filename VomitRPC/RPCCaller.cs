@@ -12,7 +12,7 @@ namespace VomitRPC {
 	public delegate object PerformRPCFunc(object This, string Name, object[] Args);
 
 	public class RPCCaller {
-		public static T CreateCaller<T>(PerformRPCFunc PerformRPC) {
+		public static T CreateInterfaceWrapper<T>(PerformRPCFunc PerformRPC) {
 			AssemblyName AName = new AssemblyName("Assembly_" + typeof(T).Name);
 			AppDomain Domain = Thread.GetDomain();
 
@@ -38,7 +38,7 @@ namespace VomitRPC {
 
 
 			Type TType = TBuilder.CreateType();
-			ABuilder.Save(AName + ".dll");
+			//ABuilder.Save(AName + ".dll");
 
 			object TypeInstance = Activator.CreateInstance(TType);
 			FieldInfo PerformRPCFieldInstance = TypeInstance.GetType().GetField(PerformRPCField.Name);

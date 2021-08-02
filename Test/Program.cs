@@ -8,46 +8,20 @@ using VomitRPC;
 
 namespace Test {
 	public interface ITest {
-		void DoSomething();
+		object[] SomeMethod(int A, int B, string[] Strings);
 
-		int Add(int A, int B);
-
-		string AppendStrings(string A, string B);
-
-		void Print(string Str);
-	}
-
-	class TestImpl : ITest {
-		public int Add(int A, int B) {
-			return A + B;
-		}
-
-		public string AppendStrings(string A, string B) {
-			return A + B;
-		}
-
-		public void DoSomething() {
-			Console.WriteLine("Doing something!");
-		}
-
-		public void Print(string Str) {
-			Console.WriteLine("Print: {0}", Str);
-		}
+		void SomeOtherMethod();
 	}
 
 	public class Program {
 		static void Main(string[] args) {
-			TestImpl RemoteObject = new TestImpl();
-
-			ITest TestCaller = RPCCaller.CreateCaller<ITest>((This, Name, Args) => {
-				MethodInfo Method = RemoteObject.GetType().GetMethod(Name);
-				return Method.Invoke(RemoteObject, Args);
+			ITest TestCaller = RPCCaller.CreateInterfaceWrapper<ITest>((This, Name, Args) => {
+				Console.WriteLine("You are calling '{0}' with {1} arguments", Name, Args?.Length ?? 0);
+				return null;
 			});
 
-			TestCaller.DoSomething();
-			Console.WriteLine("Result = {0}", TestCaller.Add(2, 3));
-			TestCaller.Print("Print this string!");
-			Console.WriteLine("Appended string = {0}", TestCaller.AppendStrings("Hello", "World!"));
+			object[] Ret = TestCaller.SomeMethod(2, 3, new[] { "String1", "String2" });
+			TestCaller.SomeOtherMethod();
 
 		}
 	}
