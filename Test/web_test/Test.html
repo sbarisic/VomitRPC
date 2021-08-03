@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta charset="utf-8" />
+	<title></title>
+</head>
+<body>
+	<script>
+		window.onload = function () {
+			console.log("Hello World!");
+
+			let WS = new WebSocket("ws://127.0.0.1/rpc");
+
+			WS.onopen = function (e) {
+				console.log("Open!");
+			}
+
+			WS.onmessage = function (e) {
+				console.log("Message! " + e.data);
+			}
+
+			WS.onclose = function (e) {
+				console.log("Close!");
+			}
+
+			WS.onerror = function (e) {
+				console.log("Error!");
+			}
+
+
+		}
+	</script>
+</body>
+</html>

@@ -9,9 +9,11 @@ using System.Reflection.Emit;
 using System.Linq.Expressions;
 
 namespace VomitRPC {
-	public delegate object PerformRPCFunc(object This, string Name, object[] Args);
+	public delegate object PerformRPCFunc(object This, string Name, MethodInfo MethInfo, object[] Args);
 
 	public class RPCCaller {
+		const bool DumpGeneratedDll = false;
+
 		public static T CreateInterfaceWrapper<T>(PerformRPCFunc PerformRPC) {
 			AssemblyName AName = new AssemblyName("Assembly_" + typeof(T).Name);
 			AppDomain Domain = Thread.GetDomain();
@@ -23,7 +25,7 @@ namespace VomitRPC {
 			FieldBuilder PerformRPCField = TBuilder.DefineField("PerformRPC", typeof(PerformRPCFunc), FieldAttributes.Public);
 
 			TBuilder.AddInterfaceImplementation(typeof(T));
-		
+
 			MethodInfo[] RequiredMethods = typeof(T).GetMethods();
 			for (int i = 0; i < RequiredMethods.Length; i++) {
 				ParameterInfo[] Params = RequiredMethods[i].GetParameters();
@@ -38,7 +40,9 @@ namespace VomitRPC {
 
 
 			Type TType = TBuilder.CreateType();
-			//ABuilder.Save(AName + ".dll");
+
+			if (DumpGeneratedDll)
+				ABuilder.Save(AName + ".dll");
 
 			object TypeInstance = Activator.CreateInstance(TType);
 			FieldInfo PerformRPCFieldInstance = TypeInstance.GetType().GetField(PerformRPCField.Name);
@@ -50,12 +54,22 @@ namespace VomitRPC {
 		static void GeneratePerformRPCCall(MethodBuilder MB, ParameterInfo[] MethodParams, FieldBuilder LocalFunc) {
 			ILGenerator IL = MB.GetILGenerator();
 
+			// Get local class field which contains function to call
 			IL.Emit(OpCodes.Ldarg_0);
 			IL.Emit(OpCodes.Ldfld, LocalFunc);
 
+			// this
 			IL.Emit(OpCodes.Ldarg_0);
+
+			// Name
 			IL.Emit(OpCodes.Ldstr, MB.Name);
 
+			// Current method info
+			MethodInfo GetCurrentMethod = typeof(MethodBase).GetMethod("GetCurrentMethod");
+			IL.Emit(OpCodes.Call, GetCurrentMethod);
+			IL.Emit(OpCodes.Castclass, typeof(MethodInfo));
+
+			// Push all arguments in an array OR null if no arguments
 			if (MethodParams.Length > 0) {
 				IL.Emit(OpCodes.Ldc_I4_S, MethodParams.Length);
 				IL.Emit(OpCodes.Newarr, typeof(object));
@@ -76,9 +90,11 @@ namespace VomitRPC {
 				IL.Emit(OpCodes.Ldnull);
 			}
 
+			// Invoke local class field function
 			MethodInfo InvokeMethod = LocalFunc.FieldType.GetMethod("Invoke");
 			IL.Emit(OpCodes.Callvirt, InvokeMethod);
 
+			// Return bullshits
 			if (MB.ReturnType == typeof(void)) {
 				IL.Emit(OpCodes.Pop);
 			} else if (MB.ReturnType.IsValueType) {
