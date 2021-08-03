@@ -7,6 +7,6 @@ Library for easy implementation of remote procedure calls
 
 ![alt text](https://raw.githubusercontent.com/sbarisic/VomitRPC/main/images/a.png "A")
 
-![alt text](https://raw.githubusercontent.com/sbarisic/VomitRPC/main/images/a.png "B")
+![alt text](https://raw.githubusercontent.com/sbarisic/VomitRPC/main/images/b.jpg "B")
 
-![alt text](https://raw.githubusercontent.com/sbarisic/VomitRPC/main/images/a.png "C")
+![alt text](https://raw.githubusercontent.com/sbarisic/VomitRPC/main/images/c.jpg "C")
